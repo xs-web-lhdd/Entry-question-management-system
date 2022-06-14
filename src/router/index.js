@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 import Home from '../views/Home.vue'
+import Markdown from '../views/Markdown.vue'
 
 const routes = [
   {
@@ -37,7 +38,15 @@ const routes = [
             component: () => import('../views/HandTopic.vue')
         }
     ] 
-},
+  },
+  {
+    name: 'Markdown',
+    path: '/Markdown',
+    meta: {
+        title: '编辑'
+    },
+    component:Markdown,
+  }
 ]
 
 

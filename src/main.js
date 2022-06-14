@@ -5,6 +5,8 @@ import store from './store'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
+// import mammoth  from 'mammoth'
+
 // 图标：
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -31,9 +33,10 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.config.globalProperties.$request = request
 app.config.globalProperties.$storage = storage
 app.config.globalProperties.$api = api
+// app.config.globalProperties.$mammoth = mammoth
 
 app
-  .use(ElementPlus)
+  .use(ElementPlus, {size: 'small'})
   .use(router)
   .use(store)
   .mount('#app')

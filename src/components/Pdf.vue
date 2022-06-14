@@ -1,13 +1,18 @@
 <template>
   <div class="main-container">
-    <input type="file" ref="fielinput" @change="uploadFile" />
+    <div class="input">
+      <el-button type="primary" @click="input">选择 PDF</el-button>
+      <el-button type="success" @click="input">上传</el-button>
+      <input class="select" type="file" ref="fielinput" @change="uploadFile" />
+      <div class="title" ref="title"></div>
+    </div>
     <div class="canvas-container">
-      <canvas ref="myCanvas" class="pdf-container"> </canvas>
+      <canvas ref="myCanvas" class="pdf-container"></canvas>
     </div>
     <div class="pagination-wrapper">
-      <button @click="clickPre">上一页</button>
-      <span>第{{ pageNo }} / {{ pdfPageNumber }}页</span>
-      <button @click="clickNext">下一页</button>
+      <el-button @click="clickPre">上一页</el-button>
+      <span class="page">第{{ pageNo }} / {{ pdfPageNumber }}页</span>
+      <el-button @click="clickNext">下一页</el-button>
     </div>
   </div>
 </template>
@@ -34,6 +39,7 @@ export default {
     uploadFile() {
       let inputDom = this.$refs.fielinput;
       let file = inputDom.files[0];
+      this.$refs.title.textContent = file.name
       let reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
@@ -105,19 +111,41 @@ export default {
         // this.renderScrollPdfPage(1);
       });
     },
+    input() {
+      this.$refs.fielinput.click()
+    }
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  .input {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+    margin-left: 10px;
+  }
+  .select {
+    visibility: hidden;
+    width: 1px;
+  }
+  .title {
+    width: 80%;
+    height: 24px;
+    overflow: hidden;
+    margin-left: 20px;
+    font-size: 12px;
+    line-height: 24px;
+  }
 }
 .canvas-container {
-  width: 600px;
-  height: 900px;
+  width: 100%;
+  height: 100%;
   border: 1px dashed black;
   position: relative;
   display: flex;
@@ -143,6 +171,9 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.page {
+  font-size: 12px;
 }
 </style>
 
