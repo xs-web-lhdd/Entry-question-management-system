@@ -2,7 +2,7 @@
   <div class="main-container">
     <div class="input">
       <el-button type="primary" @click="input">选择 PDF</el-button>
-      <el-button type="success" @click="input">上传</el-button>
+      <el-button type="success" @click="inputMessage">上传</el-button>
       <input class="select" type="file" ref="fielinput" @change="uploadFile" />
       <div class="title" ref="title"></div>
     </div>
@@ -18,12 +18,28 @@
 </template>
 
 <script>
+import ajax from '../utils/ajax'
+import { ElMessage } from 'element-plus'
 import pdfJS  from "pdfjs-dist/build/pdf.js"
 
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry.js';
 
 pdfJS.GlobalWorkerOptions.workerSrc = pdfjsWorker
 export default {
+  name: 'vuePdf',
+  props: {
+    detailMessage: {
+      type: Object,
+      default: {
+        input: "",
+        grade: "1",
+        subject: "1",
+        year: "",
+        kind: "1",
+        ab: "1"
+      }
+    }
+  },
   mounted() {},
   data() {
     return {
@@ -33,12 +49,22 @@ export default {
       renderingPage: false,
       pdfData: null, // PDF的base64
       scale: 1, // 缩放值
+      pdfValue: null,
+      file: null
     };
   },
   methods: {
     uploadFile() {
       let inputDom = this.$refs.fielinput;
       let file = inputDom.files[0];
+      console.log(file);
+      if(file.type !== "application/pdf") {
+        ElMessage.error('请选择 PDF 格式文件')
+        return
+      }
+      this.file = file
+      // this.file.append('file', inputDom.files[0])
+      // console.log(this.file);
       this.$refs.title.textContent = file.name
       let reader = new FileReader();
       reader.readAsDataURL(file);
@@ -46,6 +72,7 @@ export default {
         let data = atob(
           reader.result.substring(reader.result.indexOf(",") + 1)
         );
+        this.pdfValue = data
         this.loadPdfData(data);
       };
     },
@@ -113,6 +140,33 @@ export default {
     },
     input() {
       this.$refs.fielinput.click()
+    },
+    async inputMessage() {
+      if(!this.pdfData) {
+        ElMessage({
+          message: '请先选择 PDF 后再上传',
+          type: 'warning',
+        })
+        return
+      }
+      const res = await ajax({
+        action: 'https://www.fastmock.site/mock/b846b9ca901d017a72546d2589b4eb0d/api/dept/operate',
+        data: this.detailMessage,
+        filename: 'file',
+        file: this.file,
+        onError: (msg) => {
+          console.log('失败的信息', msg);
+        },
+        onSuccess: (msg) => {
+          console.log('成功的信息', msg);
+        }
+      })
+      // const res = await this.$api.pdf({
+      //   // ...this.detailMessage,
+      //   // pdfVale: this.pdfValue,
+      //   pdf: this.file
+      // })
+      console.log(res);
     }
   },
 };
@@ -171,6 +225,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 5px;
 }
 .page {
   font-size: 12px;
